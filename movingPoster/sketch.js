@@ -30,9 +30,20 @@ function setup() {
 }
 
 function draw() {
-  // 배경 이미지 그리기
-  if (bgImg) {
-    image(bgImg, 0, 0, width, height);
+  let offsetX = 0;
+  let offsetY = 0;
+  let drawW = width;
+  let drawH = height;
+
+  if (bgImg && bgImg.width > 0 && bgImg.height > 0) {
+    let scale = min(width / bgImg.width, height / bgImg.height);
+    drawW = bgImg.width * scale;
+    drawH = bgImg.height * scale;
+    offsetX = (width - drawW) / 2;
+    offsetY = (height - drawH) / 2;
+
+    background(0);
+    image(bgImg, offsetX, offsetY, drawW, drawH);
   } else {
     background(0);
   }
@@ -44,6 +55,13 @@ function draw() {
     xpos[i] = xpos[i + 1];
     ypos[i] = ypos[i + 1];
   }
+
+  push();
+  drawingContext.save();
+
+  drawingContext.beginPath();
+  drawingContext.rect(offsetX, offsetY, drawW, drawH);
+  drawingContext.clip();
 
   noStroke();
   for (let i = 0; i < len; i++) {
@@ -65,8 +83,12 @@ function draw() {
     let d = map(i, 0, len - 1, 170, 20);
     circle(xpos[i], ypos[i], d);
   }
+
+  drawingContext.restore();
+  pop();
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
